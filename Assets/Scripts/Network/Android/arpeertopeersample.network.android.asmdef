@@ -2,7 +2,8 @@
     "name": "arpeertopeersample.network.android",
     "references": [
         "UnityWifiDirect",
-        "arpeertopeersample.network"
+        "arpeertopeersample.network",
+        "arpeertopeersample.utility"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

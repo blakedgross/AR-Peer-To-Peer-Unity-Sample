@@ -1,4 +1,6 @@
-﻿namespace ARPeerToPeerSample.Network
+﻿using System;
+
+namespace ARPeerToPeerSample.Network
 {
     /// <summary>
     /// Interface for different platform implementation of network manager
@@ -6,5 +8,7 @@
     public interface INetworkManager
     {
         void Start();
+        void Connect();
+        void SendMessage(string message);
     }
 }

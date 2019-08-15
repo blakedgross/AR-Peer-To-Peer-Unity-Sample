@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,10 @@ namespace ARPeerToPeerSample.Network
 {
     public class WifiDirectImpl : WifiDirectBase
     {
+        public Action<string> ServiceFound;
+        public Action<string> MessageReceived;
+        public Action ConnectionEstablished;
+
         public void StartWifiDirectConnection()
         {
             base.initialize(this.gameObject.name);
@@ -24,6 +29,19 @@ namespace ARPeerToPeerSample.Network
         public override void onServiceFound(string addr)
         {
             print("service found: " + addr);
+            ServiceFound?.Invoke(addr);
+        }
+
+        public override void onMessage(string message)
+        {
+            print("message received: " + message);
+            MessageReceived?.Invoke(message);
+        }
+
+        public override void onConnect()
+        {
+            print("connected to other device");
+            ConnectionEstablished?.Invoke();
         }
     }
 }

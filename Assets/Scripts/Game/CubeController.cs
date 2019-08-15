@@ -29,7 +29,7 @@ namespace ARPeerToPeerSample.Game
                 _velocityModifier *= -1f;
             }
 
-            this.transform.localPosition = new Vector3(newXPos, this.transform.localPosition.y, this.transform.localPosition.z);
+            //this.transform.localPosition = new Vector3(newXPos, this.transform.localPosition.y, this.transform.localPosition.z);
         }
     }
 }
