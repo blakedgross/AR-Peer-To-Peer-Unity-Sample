@@ -1,0 +1,17 @@
+{
+    "name": "arpeertopeersample.network.android",
+    "references": [
+        "UnityWifiDirect"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Android"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
