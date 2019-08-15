@@ -1,14 +1,11 @@
 {
-    "name": "arpeertopeersample.network.android",
+    "name": "arpeertopeersample.game",
     "references": [
-        "UnityWifiDirect",
-        "arpeertopeersample.network"
+        "GUID:f69378c4cf5aff7488271848261d6758",
+        "GUID:ba37ade8f534f3d40acc435884238f34"
     ],
     "optionalUnityReferences": [],
-    "includePlatforms": [
-        "Android",
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
