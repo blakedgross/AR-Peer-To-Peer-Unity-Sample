@@ -1,0 +1,3 @@
+[submodule "Assets/Addons/UnityWifiDirect"]
+	path = Assets/Addons/UnityWifiDirect
+	url = https://github.com/Katerpilet/UnityWifiDirect.git
