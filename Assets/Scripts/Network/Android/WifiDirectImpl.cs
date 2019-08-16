@@ -30,6 +30,7 @@ namespace ARPeerToPeerSample.Network
         {
             print("service found: " + addr);
             ServiceFound?.Invoke(addr);
+            base.stopDiscovering();
         }
 
         public override void onMessage(string message)
@@ -42,6 +43,23 @@ namespace ARPeerToPeerSample.Network
         {
             print("connected to other device");
             ConnectionEstablished?.Invoke();
+        }
+
+        public override void onServiceDisconnected()
+        {
+            print("service disconnected");
+            base.terminate();
+            Application.Quit();
+        }
+
+        public void OnApplicationPause(bool pause)
+        {
+            print("app pause");
+
+            if (pause)
+            {
+                this.onServiceDisconnected();
+            }
         }
     }
 }

@@ -162,7 +162,7 @@ PlayerSettings:
     Android: com.sample.arpeertopeer
   buildNumber: {}
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 18
+  AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   aotOptions: 
