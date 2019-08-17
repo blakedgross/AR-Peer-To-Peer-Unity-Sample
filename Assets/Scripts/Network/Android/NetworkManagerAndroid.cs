@@ -7,6 +7,7 @@ namespace ARPeerToPeerSample.Network
     {
         private WifiDirectImpl _wifiDirectImpl;
         private string _addr;
+        //private XPSession
 
         public NetworkManagerAndroid(WifiDirectImpl wifiDirectImpl)
         {

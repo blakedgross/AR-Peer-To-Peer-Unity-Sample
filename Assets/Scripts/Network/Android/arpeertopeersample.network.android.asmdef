@@ -3,7 +3,8 @@
     "references": [
         "UnityWifiDirect",
         "arpeertopeersample.network",
-        "arpeertopeersample.utility"
+        "arpeertopeersample.utility",
+        "Unity.XR.ARCore"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
