@@ -1,13 +1,14 @@
 {
-    "name": "arpeertopeersample.game",
+    "name": "arpeertopeersample.network.ios",
     "references": [
         "GUID:f69378c4cf5aff7488271848261d6758",
-        "GUID:ba37ade8f534f3d40acc435884238f34",
-        "GUID:3640400c32ff1834cb003b5c4bc4eefa",
-        "GUID:5e710e7c2508d4eff8760e84d1fe31b9"
+        "GUID:dafa4c98c4fb24e8f91ef663c21a9251"
     ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "iOS"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

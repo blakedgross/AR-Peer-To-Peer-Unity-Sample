@@ -9,6 +9,6 @@ namespace ARPeerToPeerSample.Network
     {
         void Start();
         void Connect();
-        void SendMessage(string message);
+        void SendMessage(byte[] message);
     }
 }

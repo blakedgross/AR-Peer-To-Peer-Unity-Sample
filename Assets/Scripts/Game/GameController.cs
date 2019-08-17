@@ -1,5 +1,6 @@
 ﻿using ARPeerToPeerSample.Network;
 using System;
+using System.Text;
 using UnityEngine;
 
 namespace ARPeerToPeerSample.Game
@@ -22,6 +23,8 @@ namespace ARPeerToPeerSample.Game
 #if UNITY_ANDROID
             GameObject androidNetworkGO = Instantiate(_androidWifiObject);
             _networkManager = new NetworkManagerAndroid(androidNetworkGO.GetComponent<WifiDirectImpl>());
+#elif UNITY_IOS
+            _networkManager = new NetworkManageriOS();
 #endif
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
@@ -47,10 +50,11 @@ namespace ARPeerToPeerSample.Game
             _menuViewLogic.SetStateConnectionEstablished();
         }
 
-        private void OnMessageReceived(string message)
+        private void OnMessageReceived(byte[] message)
         {
-            print("received color: " + message);
-            SetColor(_cube.GetComponent<Renderer>(), StringToColor(message));
+            string color = Encoding.UTF8.GetString(message);
+            print("received color: " + color);
+            SetColor(_cube.GetComponent<Renderer>(), StringToColor(color));
         }
 
         private void OnChangeColorAndSendMessage()
@@ -71,9 +75,12 @@ namespace ARPeerToPeerSample.Game
             }
 
             SetColor(_cube.GetComponent<Renderer>(), StringToColor(colorToSend));
-            _networkManager.SendMessage(colorToSend);
+
+            byte[] colorToSendBytes = Encoding.UTF8.GetBytes(colorToSend);
+            _networkManager.SendMessage(colorToSendBytes);
         }
 
+        // todo: this is pretty dumb. just send the color bits
         private Color StringToColor(string color)
         {
             switch (color)

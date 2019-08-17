@@ -6,7 +6,7 @@ namespace ARPeerToPeerSample.Network
     {
         // todo: polling system would be a better implementation, but this is fine for now
         public Action<string> ServiceFound;
-        public Action<string> MessageReceived;
+        public Action<byte[]> MessageReceived;
         public Action ConnectionEstablished;
 
         public virtual void Connect()
@@ -14,7 +14,7 @@ namespace ARPeerToPeerSample.Network
             throw new NotImplementedException();
         }
 
-        public virtual void SendMessage(string message)
+        public virtual void SendMessage(byte[] message)
         {
             throw new NotImplementedException();
         }
