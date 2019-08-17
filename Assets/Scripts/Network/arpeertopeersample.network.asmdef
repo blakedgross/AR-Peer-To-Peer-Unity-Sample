@@ -1,3 +1,15 @@
-﻿{
-	"name": "arpeertopeersample.network"
+{
+    "name": "arpeertopeersample.network",
+    "references": [
+        "GUID:92703082f92b41ba80f0d6912de66115"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
 }

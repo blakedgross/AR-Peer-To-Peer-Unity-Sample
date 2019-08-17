@@ -13,6 +13,9 @@ public class MenuViewLogic : MonoBehaviour
     [SerializeField, Tooltip("Connection status textfield")]
     private Text _connectionStatusText;
 
+    [SerializeField, Tooltip("Anchor status text")]
+    private Text _anchorStatusText;
+
     public Action ConnectionButtonPressed;
 
     public Action ChangeColorButtonPressed;
@@ -43,5 +46,10 @@ public class MenuViewLogic : MonoBehaviour
     public void OnColorChangeButtonPressed()
     {
         ChangeColorButtonPressed?.Invoke();
+    }
+
+    public void SetAnchorState(string state)
+    {
+        _anchorStatusText.text = state;
     }
 }

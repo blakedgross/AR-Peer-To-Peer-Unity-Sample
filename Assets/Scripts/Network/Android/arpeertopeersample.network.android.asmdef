@@ -4,7 +4,9 @@
         "UnityWifiDirect",
         "arpeertopeersample.network",
         "arpeertopeersample.utility",
-        "Unity.XR.ARCore"
+        "GoogleARCore.SDK",
+        "Unity.XR.ARSubsystems",
+        "Unity.XR.ARExtensions"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

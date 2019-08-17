@@ -1,4 +1,6 @@
 ﻿using ARPeerToPeerSample.Utility;
+using GoogleARCore.CrossPlatform;
+using System;
 using UnityEngine;
 
 namespace ARPeerToPeerSample.Network
@@ -7,7 +9,6 @@ namespace ARPeerToPeerSample.Network
     {
         private WifiDirectImpl _wifiDirectImpl;
         private string _addr;
-        //private XPSession
 
         public NetworkManagerAndroid(WifiDirectImpl wifiDirectImpl)
         {
@@ -32,6 +33,15 @@ namespace ARPeerToPeerSample.Network
         public override void SendMessage(string message)
         {
             _wifiDirectImpl.sendMessage(message);
+        }
+
+        public override void CreateAnchor(IntPtr anchorNativePtr)
+        {
+            // raw anchor data stored at a 4 byte offset: https://forum.unity.com/threads/arfoundation-2-1-azure-cloud-spatial-anchors.679639/
+            XPSession.CreateCloudAnchor((IntPtr)(anchorNativePtr.ToInt64() + sizeof(int))).ThenAction((CloudAnchorResult result) =>
+            {
+                AnchorPostComplete?.Invoke(result.Response.ToString());
+            });
         }
 
         private void OnServiceFound(string addr)

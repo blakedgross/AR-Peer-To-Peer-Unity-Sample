@@ -10,5 +10,6 @@ namespace ARPeerToPeerSample.Network
         void Start();
         void Connect();
         void SendMessage(string message);
+        void CreateAnchor(IntPtr anchorNativePtr);
     }
 }

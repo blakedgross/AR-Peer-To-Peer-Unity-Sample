@@ -1,6 +1,7 @@
 ﻿using ARPeerToPeerSample.Network;
 using System;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 
 namespace ARPeerToPeerSample.Game
 {
@@ -17,6 +18,14 @@ namespace ARPeerToPeerSample.Game
         [SerializeField, Tooltip("Cube object")]
         private GameObject _cube;
 
+        [SerializeField, Tooltip("Controller which detects hits")]
+        private ARHitController _arHitController;
+
+        [SerializeField, Tooltip("Anchor prefab which is the tracked objects")]
+        private GameObject _anchorPrefab;
+
+        private GameObject _anchor;
+
         private void Awake()
         {
 #if UNITY_ANDROID
@@ -26,10 +35,29 @@ namespace ARPeerToPeerSample.Game
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
             _networkManager.MessageReceived += OnMessageReceived;
+            _networkManager.AnchorPostComplete += OnAnchorPostComplete;
             _networkManager.Start();
 
             _menuViewLogic.ConnectionButtonPressed += OnConnectionButtonPressed;
             _menuViewLogic.ChangeColorButtonPressed += OnChangeColorAndSendMessage;
+
+            _anchor = Instantiate(_anchorPrefab);
+            _anchor.SetActive(false);
+        }
+
+        private void Update()
+        {
+            ARRaycastHit hitInfo; ARPlane arPlane;
+
+            if (_arHitController.CheckHitOnPlane(out hitInfo, out arPlane))
+            {
+                _anchor.transform.position = hitInfo.pose.position;
+                _anchor.transform.rotation = hitInfo.pose.rotation;
+                _anchor.SetActive(true);
+                _menuViewLogic.SetAnchorState("Local anchor created");
+
+                _networkManager.CreateAnchor(arPlane.nativePtr);
+            }
         }
 
         private void OnServiceFound(string serviceAddress)
@@ -51,6 +79,13 @@ namespace ARPeerToPeerSample.Game
         {
             print("received color: " + message);
             SetColor(_cube.GetComponent<Renderer>(), StringToColor(message));
+        }
+
+        private void OnAnchorPostComplete(string anchorStatus)
+        {
+            print("anchor posted: " + anchorStatus);
+            _menuViewLogic.SetAnchorState(anchorStatus);
+            // todo: send anchor id peer
         }
 
         private void OnChangeColorAndSendMessage()

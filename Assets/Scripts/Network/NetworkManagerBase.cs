@@ -8,8 +8,14 @@ namespace ARPeerToPeerSample.Network
         public Action<string> ServiceFound;
         public Action<string> MessageReceived;
         public Action ConnectionEstablished;
+        public Action<string> AnchorPostComplete;
 
         public virtual void Connect()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void CreateAnchor(IntPtr anchorNativePtr)
         {
             throw new NotImplementedException();
         }
