@@ -1,3 +1,6 @@
 [submodule "Assets/Addons/UnityWifiDirect"]
 	path = Assets/Addons/UnityWifiDirect
 	url = https://github.com/Katerpilet/UnityWifiDirect.git
+[submodule "Assets/Addons/arcore-unity-sdk"]
+	path = Assets/Addons/arcore-unity-sdk
+	url = https://github.com/Katerpilet/arcore-unity-sdk.git
