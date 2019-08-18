@@ -120,6 +120,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &607889176 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4498410103196269640, guid: ecc643427aea03e478b25943c1ae66e3,
+    type: 3}
+  m_PrefabInstance: {fileID: 4498410103826323409}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3859a92a05d4f5d418cb6ca605290e74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &992746554
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,10 +575,9 @@ PrefabInstance:
       objectReference: {fileID: 2682940745185246843}
     - target: {fileID: 2397649183827791426, guid: 932a80a92befaf144b3a671c98eddc6a,
         type: 3}
-      propertyPath: _anchorPrefab
+      propertyPath: _arSession
       value: 
-      objectReference: {fileID: 3081813081895843584, guid: d014272bdee1a4145a28e077c2c6b7c6,
-        type: 3}
+      objectReference: {fileID: 607889176}
     - target: {fileID: 1902488231922020747, guid: 932a80a92befaf144b3a671c98eddc6a,
         type: 3}
       propertyPath: _arRaycastManager

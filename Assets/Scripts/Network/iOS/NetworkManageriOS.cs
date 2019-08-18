@@ -1,15 +1,23 @@
 ﻿using UnityEngine;
 using UnityMultipeerConnectivity;
+using UnityEngine.XR.ARFoundation;
+using System;
+using System.Threading.Tasks;
+using UnityEngine.XR.ARKit;
+using System.Threading;
 
 namespace ARPeerToPeerSample.Network
 {
     public class NetworkManageriOS : NetworkManagerBase
     {
-        public NetworkManageriOS()
+        private ARSession _arSession;
+        public NetworkManageriOS(ARSession arSession)
         {
             // todo: clean these up
             UnityMCSessionNativeInterface.GetMcSessionNativeInterface().DataReceivedEvent += OnDataReceivedEvent;
-            UnityMCSessionNativeInterface.GetMcSessionNativeInterface().StateChangedEvent += OnStateChangedEvent;;
+            UnityMCSessionNativeInterface.GetMcSessionNativeInterface().StateChangedEvent += OnStateChangedEvent;
+
+            _arSession = arSession;
         }
 
         public override void Connect()
@@ -19,12 +27,25 @@ namespace ARPeerToPeerSample.Network
 
         public override void SendMessage(byte[] message)
         {
+            Debug.Log("Send message to all friends");
             UnityMCSessionNativeInterface.GetMcSessionNativeInterface().SendToAllPeers(message);
         }
 
         public override void Start()
         {
             Debug.Log("Start is out of our control");
+        }
+
+        public override void SendAnchor(ARPlane plane)
+        {
+            SendAnchorAsync(plane);
+        }
+
+        private async void SendAnchorAsync(ARPlane plane)
+        {
+            ARWorldMap worldMap = await GetARWorldMapAsync();
+            PackableARWorldMap packableARWorldMap = (PackableARWorldMap)worldMap;
+            SendMessage(packableARWorldMap.ARWorldMapData);
         }
 
         private void OnDataReceivedEvent(byte[] obj)
@@ -51,5 +72,35 @@ namespace ARPeerToPeerSample.Network
             }
         }
 
+        private async Task<ARWorldMap> GetARWorldMapAsync()
+        {
+            if (!(_arSession.subsystem is ARKitSessionSubsystem arKitSessionSubsystem))
+            {
+                throw new Exception("No session subsystem available. Could not load.");
+            }
+            return await arKitSessionSubsystem.GetARWorldMapTask();
+        }
+    }
+
+    public static class ARKitSessionSubsystemExtensions
+    {
+        public static async Task<ARWorldMap> GetARWorldMapTask(this ARKitSessionSubsystem session, CancellationToken cancellationToken = default)
+        {
+            using (var request = session.GetARWorldMapAsync())
+            {
+                while (!request.status.IsDone())
+                {
+                    await Task.Yield();
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                if (request.status.IsError())
+                {
+                    throw new Exception($"Session getting AR world map failed with status {request.status}");
+                }
+
+                return request.GetWorldMap();
+            }
+        }
     }
 }

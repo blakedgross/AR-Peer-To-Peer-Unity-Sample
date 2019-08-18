@@ -2,7 +2,10 @@
     "name": "arpeertopeersample.network.ios",
     "references": [
         "GUID:f69378c4cf5aff7488271848261d6758",
-        "GUID:dafa4c98c4fb24e8f91ef663c21a9251"
+        "GUID:dafa4c98c4fb24e8f91ef663c21a9251",
+        "GUID:a9420e37d7990b54abdef6688edbe313",
+        "GUID:dfd0ce20189d48e5b22bb4134b558f5a",
+        "GUID:92703082f92b41ba80f0d6912de66115"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

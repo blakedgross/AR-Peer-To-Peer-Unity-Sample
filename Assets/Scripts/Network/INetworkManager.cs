@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.XR.ARFoundation;
 
 namespace ARPeerToPeerSample.Network
 {
@@ -10,5 +11,6 @@ namespace ARPeerToPeerSample.Network
         void Start();
         void Connect();
         void SendMessage(byte[] message);
+        void SendAnchor(ARPlane plane);
     }
 }

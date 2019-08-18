@@ -47,8 +47,10 @@ MonoBehaviour:
   _androidWifiObject: {fileID: 7302414579865217094, guid: fb168c11799129a459abb048a041b0c3,
     type: 3}
   _menuViewLogic: {fileID: 0}
-  _anchor: {fileID: 3081813081895843584, guid: d014272bdee1a4145a28e077c2c6b7c6, type: 3}
+  _anchorPrefab: {fileID: 3081813081895843584, guid: d014272bdee1a4145a28e077c2c6b7c6,
+    type: 3}
   _arHitController: {fileID: 1902488231922020747}
+  _arSession: {fileID: 0}
 --- !u!114 &1902488231922020747
 MonoBehaviour:
   m_ObjectHideFlags: 0

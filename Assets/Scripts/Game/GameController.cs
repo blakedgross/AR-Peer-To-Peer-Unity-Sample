@@ -23,6 +23,9 @@ namespace ARPeerToPeerSample.Game
         [SerializeField]
         private ARHitController _arHitController;
 
+        [SerializeField, Tooltip("AR Foundation Session")]
+        private ARSession _arSession;
+
         private GameObject _anchor;
 
         private void Awake()
@@ -31,7 +34,7 @@ namespace ARPeerToPeerSample.Game
             GameObject androidNetworkGO = Instantiate(_androidWifiObject);
             _networkManager = new NetworkManagerAndroid(androidNetworkGO.GetComponent<WifiDirectImpl>());
 #elif UNITY_IOS
-            _networkManager = new NetworkManageriOS();
+            _networkManager = new NetworkManageriOS(_arSession);
 #endif
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
@@ -53,6 +56,7 @@ namespace ARPeerToPeerSample.Game
                 _anchor.SetActive(true);
                 _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
                 _anchor.transform.SetParent(trackedPlane.transform);
+                _networkManager.SendAnchor(trackedPlane);
             }
         }
 

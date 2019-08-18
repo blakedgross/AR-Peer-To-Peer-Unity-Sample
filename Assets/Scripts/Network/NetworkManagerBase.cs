@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.XR.ARFoundation;
 
 namespace ARPeerToPeerSample.Network
 {
@@ -20,6 +21,11 @@ namespace ARPeerToPeerSample.Network
         }
 
         public virtual void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void SendAnchor(ARPlane plane)
         {
             throw new NotImplementedException();
         }
