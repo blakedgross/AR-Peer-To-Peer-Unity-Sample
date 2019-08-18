@@ -29,7 +29,7 @@ namespace ARPeerToPeerSample.Network
             _wifiDirectImpl.connectToService(_addr);
         }
 
-        public override void SendMessage(string message)
+        public override void SendMessage(NetworkMessageStruct message)
         {
             _wifiDirectImpl.sendMessage(message);
         }

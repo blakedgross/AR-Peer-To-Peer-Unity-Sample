@@ -17,6 +17,8 @@ public class MenuViewLogic : MonoBehaviour
 
     public Action ChangeColorButtonPressed;
 
+    public Action SendWorldMapButtonPressed;
+
     private void Awake()
     {
         _connectionButton.gameObject.SetActive(false);
@@ -43,5 +45,14 @@ public class MenuViewLogic : MonoBehaviour
     public void OnColorChangeButtonPressed()
     {
         ChangeColorButtonPressed?.Invoke();
+    }
+
+    public void OnSendWorldMapButtonPressed()
+    {
+#if UNITY_IOS
+        SendWorldMapButtonPressed?.Invoke();
+#else
+        Debug.Log("World map not supported on this platform");
+#endif
     }
 }

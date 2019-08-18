@@ -38,13 +38,18 @@ namespace ARPeerToPeerSample.Game
 #endif
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
-            _networkManager.MessageReceived += OnMessageReceived;
+            _networkManager.ColorChangeMessageRecieved += OnColorChangeMessageReceived;
             _networkManager.Start();
 
             _menuViewLogic.ConnectionButtonPressed += OnConnectionButtonPressed;
             _menuViewLogic.ChangeColorButtonPressed += OnChangeColorAndSendMessage;
+            _menuViewLogic.SendWorldMapButtonPressed += OnSendWorldMap;
+
             _anchor = Instantiate(_anchorPrefab);
             _anchor.SetActive(false);
+
+            // uncomment to unit test packet serialization
+            //print("color serialization result: " + _networkManager.TestColorSerialization() + " network package: "  + _networkManager.TestNetworkPacketSerialization());
         }
 
         private void Update()
@@ -75,49 +80,38 @@ namespace ARPeerToPeerSample.Game
             _menuViewLogic.SetStateConnectionEstablished();
         }
 
-        private void OnMessageReceived(byte[] message)
+        private void OnColorChangeMessageReceived(Color color)
         {
-            string color = Encoding.UTF8.GetString(message);
-            print("received color: " + color);
-            SetColor(_anchor.GetComponent<Renderer>(), StringToColor(color));
+            print("received color: " + color.ToString());
+            SetColor(_anchor.GetComponent<Renderer>(), color);
         }
 
         private void OnChangeColorAndSendMessage()
         {
-            string colorToSend = string.Empty;
+            Color colorToSend;
             int colorToSendNum = UnityEngine.Random.Range(0, 3);
             if (colorToSendNum == 0)
             {
-                colorToSend = "red";
+                colorToSend = Color.red;
             }
             else if (colorToSendNum == 1)
             {
-                colorToSend = "blue";
+                colorToSend = Color.blue;
             }
             else
             {
-                colorToSend = "green";
+                colorToSend = Color.green;
             }
 
-            SetColor(_anchor.GetComponent<Renderer>(), StringToColor(colorToSend));
-
-            byte[] colorToSendBytes = Encoding.UTF8.GetBytes(colorToSend);
-            _networkManager.SendMessage(colorToSendBytes);
+            SetColor(_anchor.GetComponent<Renderer>(), colorToSend);
+            _networkManager.SendColorMessage(colorToSend);
         }
 
-        // todo: this is pretty dumb. just send the color bits
-        private Color StringToColor(string color)
+        private void OnSendWorldMap()
         {
-            switch (color)
+            if (_networkManager is NetworkManageriOS networkManageriOS)
             {
-                case "red":
-                    return Color.red;
-                case "blue":
-                    return Color.blue;
-                case "green":
-                    return Color.green;
-                default:
-                    return Color.magenta;
+                networkManageriOS.SendWorldMap();
             }
         }
 

@@ -25,15 +25,20 @@ namespace ARPeerToPeerSample.Network
             Debug.Log("Connection is out of our control");
         }
 
-        public override void SendMessage(byte[] message)
+        protected override void SendMessage(NetworkMessageStruct message)
         {
             Debug.Log("Send message to all friends");
-            UnityMCSessionNativeInterface.GetMcSessionNativeInterface().SendToAllPeers(message);
+            UnityMCSessionNativeInterface.GetMcSessionNativeInterface().SendToAllPeers(message.Serialize());
         }
 
         public override void Start()
         {
             Debug.Log("Start is out of our control");
+        }
+
+        public void SendWorldMap()
+        {
+            SendWorldMapAsync();
         }
 
         public override void SendAnchor(ARPlane plane)
@@ -43,15 +48,34 @@ namespace ARPeerToPeerSample.Network
 
         private async void SendAnchorAsync(ARPlane plane)
         {
+            // send anchor info by serializing plane and sending it over
+        }
+
+        private async void SendWorldMapAsync()
+        {
             ARWorldMap worldMap = await GetARWorldMapAsync();
             PackableARWorldMap packableARWorldMap = (PackableARWorldMap)worldMap;
-            SendMessage(packableARWorldMap.ARWorldMapData);
+            NetworkMessageStruct networkMessageStruct = new NetworkMessageStruct
+            {
+                Type = MessageType.WorldMap,
+                Message = packableARWorldMap.ARWorldMapData
+            };
+            SendMessage(networkMessageStruct);
         }
 
         private void OnDataReceivedEvent(byte[] obj)
         {
-            Debug.Log("recieved message");
-            MessageReceived?.Invoke(obj);
+            NetworkMessageStruct networkMessage = NetworkMessageStruct.Deserialize(obj);
+            switch (networkMessage.Type)
+            {
+                case MessageType.ColorChange:
+                    DeserializeColorAndSendEvent(networkMessage.Message);
+                    break;
+                case MessageType.WorldMap:
+                    ARWorldMap arWorldMap = (ARWorldMap)new PackableARWorldMap(networkMessage.Message);
+                    RestartSessionWithWorldMap(arWorldMap);
+                    break;
+            }
         }
 
         private void OnStateChangedEvent(UnityMCPeerID arg1, UnityMCSessionState arg2)
@@ -79,6 +103,14 @@ namespace ARPeerToPeerSample.Network
                 throw new Exception("No session subsystem available. Could not load.");
             }
             return await arKitSessionSubsystem.GetARWorldMapTask();
+        }
+
+        private void RestartSessionWithWorldMap(ARWorldMap arWorldMap)
+        {
+            if (_arSession.subsystem is ARKitSessionSubsystem arKitSessionSubsystem)
+            {
+                arKitSessionSubsystem.ApplyWorldMap(arWorldMap);
+            }
         }
     }
 
