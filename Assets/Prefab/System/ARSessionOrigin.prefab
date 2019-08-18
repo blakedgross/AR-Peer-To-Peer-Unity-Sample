@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3970709880296736654}
   - component: {fileID: 7090915475095542013}
   - component: {fileID: 5207454520219886138}
+  - component: {fileID: 4043589481404367599}
   m_Layer: 0
   m_Name: ARSessionOrigin
   m_TagString: Untagged
@@ -76,6 +77,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PointCloudPrefab: {fileID: 1854016325464908, guid: 0d4f49e744bffd14eb527ba76c9bba12,
     type: 3}
+--- !u!114 &4043589481404367599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407450557183208970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa17d122634046b4a8e23048891fafc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7003150295728473033
 GameObject:
   m_ObjectHideFlags: 0

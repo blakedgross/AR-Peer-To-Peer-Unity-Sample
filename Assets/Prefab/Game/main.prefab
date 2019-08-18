@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5787593706179422992}
   - component: {fileID: 2397649183827791426}
+  - component: {fileID: 1902488231922020747}
   m_Layer: 0
   m_Name: main
   m_TagString: Untagged
@@ -46,3 +47,19 @@ MonoBehaviour:
   _androidWifiObject: {fileID: 7302414579865217094, guid: fb168c11799129a459abb048a041b0c3,
     type: 3}
   _menuViewLogic: {fileID: 0}
+  _anchor: {fileID: 3081813081895843584, guid: d014272bdee1a4145a28e077c2c6b7c6, type: 3}
+  _arHitController: {fileID: 1902488231922020747}
+--- !u!114 &1902488231922020747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5787593706179423007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 667ff865712e24d0cbea95326f82902b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _arRaycastManager: {fileID: 0}
+  _arPlaneManager: {fileID: 0}

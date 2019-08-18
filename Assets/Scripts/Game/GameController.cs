@@ -2,6 +2,8 @@
 using System;
 using System.Text;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 namespace ARPeerToPeerSample.Game
 {
@@ -15,8 +17,13 @@ namespace ARPeerToPeerSample.Game
         [SerializeField, Tooltip("Menu view logic object")]
         private MenuViewLogic _menuViewLogic;
 
-        [SerializeField, Tooltip("Cube object")]
-        private GameObject _cube;
+        [SerializeField, Tooltip("Anchor object")]
+        private GameObject _anchorPrefab;
+
+        [SerializeField]
+        private ARHitController _arHitController;
+
+        private GameObject _anchor;
 
         private void Awake()
         {
@@ -33,6 +40,20 @@ namespace ARPeerToPeerSample.Game
 
             _menuViewLogic.ConnectionButtonPressed += OnConnectionButtonPressed;
             _menuViewLogic.ChangeColorButtonPressed += OnChangeColorAndSendMessage;
+            _anchor = Instantiate(_anchorPrefab);
+            _anchor.SetActive(false);
+        }
+
+        private void Update()
+        {
+            ARRaycastHit hitInfo; ARPlane trackedPlane;
+            if (_arHitController.CheckHitOnPlane(out hitInfo, out trackedPlane))
+            {
+                print("found hit on plane: " + hitInfo.pose.position);
+                _anchor.SetActive(true);
+                _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
+                _anchor.transform.SetParent(trackedPlane.transform);
+            }
         }
 
         private void OnServiceFound(string serviceAddress)
@@ -54,7 +75,7 @@ namespace ARPeerToPeerSample.Game
         {
             string color = Encoding.UTF8.GetString(message);
             print("received color: " + color);
-            SetColor(_cube.GetComponent<Renderer>(), StringToColor(color));
+            SetColor(_anchor.GetComponent<Renderer>(), StringToColor(color));
         }
 
         private void OnChangeColorAndSendMessage()
@@ -74,7 +95,7 @@ namespace ARPeerToPeerSample.Game
                 colorToSend = "green";
             }
 
-            SetColor(_cube.GetComponent<Renderer>(), StringToColor(colorToSend));
+            SetColor(_anchor.GetComponent<Renderer>(), StringToColor(colorToSend));
 
             byte[] colorToSendBytes = Encoding.UTF8.GetBytes(colorToSend);
             _networkManager.SendMessage(colorToSendBytes);
