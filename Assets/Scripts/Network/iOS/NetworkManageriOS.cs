@@ -72,6 +72,7 @@ namespace ARPeerToPeerSample.Network
                     DeserializeColorAndSendEvent(networkMessage.Message);
                     break;
                 case MessageType.WorldMap:
+                    Debug.Log("recieved world map");
                     ARWorldMap arWorldMap = (ARWorldMap)new PackableARWorldMap(networkMessage.Message);
                     RestartSessionWithWorldMap(arWorldMap);
                     break;

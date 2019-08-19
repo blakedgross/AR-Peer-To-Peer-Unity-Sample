@@ -26,6 +26,9 @@ namespace ARPeerToPeerSample.Game
         [SerializeField, Tooltip("AR Foundation Session")]
         private ARSession _arSession;
 
+        [SerializeField]
+        private ARPlaneManager _planeManager;
+
         private GameObject _anchor;
 
         private void Awake()
@@ -44,6 +47,7 @@ namespace ARPeerToPeerSample.Game
             _menuViewLogic.ConnectionButtonPressed += OnConnectionButtonPressed;
             _menuViewLogic.ChangeColorButtonPressed += OnChangeColorAndSendMessage;
             _menuViewLogic.SendWorldMapButtonPressed += OnSendWorldMap;
+            _planeManager.planesChanged += OnPlanesChanged;
 
             _anchor = Instantiate(_anchorPrefab);
             _anchor.SetActive(false);
@@ -58,6 +62,7 @@ namespace ARPeerToPeerSample.Game
             if (_arHitController.CheckHitOnPlane(out hitInfo, out trackedPlane))
             {
                 print("found hit on plane: " + hitInfo.pose.position);
+
                 _anchor.SetActive(true);
                 _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
                 _anchor.transform.SetParent(trackedPlane.transform);
@@ -124,6 +129,19 @@ namespace ARPeerToPeerSample.Game
 
             // You can cache a reference to the renderer to avoid searching for it.
             renderer.SetPropertyBlock(block);
+        }
+
+        private void OnPlanesChanged(ARPlanesChangedEventArgs aRPlanesChangedEventArgs)
+        {
+            string[] planes = new string[_planeManager.trackables.count];
+            int counter = 0;
+            foreach (ARPlane aRPlane in _planeManager.trackables)
+            {
+                planes[counter] = aRPlane.trackableId.ToString();
+                ++counter;
+            }
+
+            _menuViewLogic.UpdatePlaneList(planes);
         }
     }
 }

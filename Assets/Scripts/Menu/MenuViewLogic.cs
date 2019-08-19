@@ -13,6 +13,9 @@ public class MenuViewLogic : MonoBehaviour
     [SerializeField, Tooltip("Connection status textfield")]
     private Text _connectionStatusText;
 
+    [SerializeField, Tooltip("Text box to show plane ids")]
+    private Text _planeListText;
+
     public Action ConnectionButtonPressed;
 
     public Action ChangeColorButtonPressed;
@@ -54,5 +57,16 @@ public class MenuViewLogic : MonoBehaviour
 #else
         Debug.Log("World map not supported on this platform");
 #endif
+    }
+
+    public void UpdatePlaneList(string[] planeIds)
+    {
+        string planeIdConcat = string.Empty;
+        for (int i = 0; i < planeIds.Length; ++i)
+        {
+            planeIdConcat += planeIds[i] + "\r\n";
+        }
+
+        _planeListText.text = planeIdConcat;
     }
 }
