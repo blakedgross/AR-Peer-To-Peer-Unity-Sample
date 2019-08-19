@@ -26,6 +26,7 @@ namespace ARPeerToPeerSample.Game
 #elif UNITY_IOS
             _networkManager = new NetworkManageriOS();
 #endif
+            _networkManager = new NetworkManageriOS(); //REMOVE (ONLY FOR DEBUG)
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
             _networkManager.MessageReceived += OnMessageReceived;
@@ -55,6 +56,7 @@ namespace ARPeerToPeerSample.Game
             string color = Encoding.UTF8.GetString(message);
             print("received color: " + color);
             SetColor(_cube.GetComponent<Renderer>(), StringToColor(color));
+            _menuViewLogic.SetStateDebugInfo(color);
         }
 
         private void OnChangeColorAndSendMessage()

@@ -13,6 +13,9 @@ public class MenuViewLogic : MonoBehaviour
     [SerializeField, Tooltip("Connection status textfield")]
     private Text _connectionStatusText;
 
+    [SerializeField, Tooltip("Connection debug textfield")]
+    private Text _debugStatusText;
+
     public Action ConnectionButtonPressed;
 
     public Action ChangeColorButtonPressed;
@@ -38,6 +41,11 @@ public class MenuViewLogic : MonoBehaviour
     public void SetStateConnectionEstablished()
     {
         _connectionStatusText.text = "Connected";
+    }
+
+    public void SetStateDebugInfo(string debugInfo)
+    {
+        _debugStatusText.text = debugInfo;
     }
 
     public void OnColorChangeButtonPressed()
