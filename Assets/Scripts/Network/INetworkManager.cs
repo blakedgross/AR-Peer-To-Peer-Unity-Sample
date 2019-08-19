@@ -13,5 +13,6 @@ namespace ARPeerToPeerSample.Network
         void Connect();
         void SendColorMessage(Color colorToSend);
         void SendAnchor(ARPlane plane);
+        void SendModelSpawn(Vector3 localPosition, Quaternion localRotation);
     }
 }

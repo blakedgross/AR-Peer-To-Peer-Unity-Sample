@@ -52,6 +52,8 @@ MonoBehaviour:
   _arHitController: {fileID: 1902488231922020747}
   _arSession: {fileID: 0}
   _planeManager: {fileID: 0}
+  _anchoredObjectsToSpawn: {fileID: 6839622513763343151, guid: 98615d3e54b3244869fdf85943d29781,
+    type: 3}
 --- !u!114 &1902488231922020747
 MonoBehaviour:
   m_ObjectHideFlags: 0

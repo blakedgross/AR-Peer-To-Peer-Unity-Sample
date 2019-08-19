@@ -9,6 +9,13 @@ namespace ARPeerToPeerSample.Game
 {
     public class GameController : MonoBehaviour
     {
+        private enum GameState
+        {
+            Searching,
+            PlaneFound,
+            SearchingForSharedPlane
+        }
+
         private NetworkManagerBase _networkManager;
 
         [SerializeField, Tooltip("Wifi object for Android")]
@@ -29,7 +36,13 @@ namespace ARPeerToPeerSample.Game
         [SerializeField]
         private ARPlaneManager _planeManager;
 
+        [SerializeField, Tooltip("Relative spawned object prefab")]
+        private GameObject _anchoredObjectsToSpawn;
+
         private GameObject _anchor;
+        private ARPlane _arPlane;
+        private TrackableId _planeToFind;
+        private GameState _gameState;
 
         private void Awake()
         {
@@ -42,6 +55,8 @@ namespace ARPeerToPeerSample.Game
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
             _networkManager.ColorChangeMessageRecieved += OnColorChangeMessageReceived;
+            _networkManager.AnchorRecieved += OnAnchorRecieved;
+            _networkManager.ObjectSpawned += OnObjectSpawned;
             _networkManager.Start();
 
             _menuViewLogic.ConnectionButtonPressed += OnConnectionButtonPressed;
@@ -52,6 +67,7 @@ namespace ARPeerToPeerSample.Game
             _anchor = Instantiate(_anchorPrefab);
             _anchor.SetActive(false);
 
+            _gameState = GameState.Searching;
             // uncomment to unit test packet serialization
             //print("color serialization result: " + _networkManager.TestColorSerialization() + " network package: "  + _networkManager.TestNetworkPacketSerialization());
         }
@@ -62,12 +78,35 @@ namespace ARPeerToPeerSample.Game
             if (_arHitController.CheckHitOnPlane(out hitInfo, out trackedPlane))
             {
                 print("found hit on plane: " + hitInfo.pose.position);
+                if (_gameState == GameState.Searching)
+                {
+                    _gameState = GameState.PlaneFound;
+                    _networkManager.SendAnchor(trackedPlane);
+                    _arPlane = trackedPlane;
+                }
+                else if (_gameState == GameState.PlaneFound)
+                {
+                    GameObject spawnedObject = SpawnObject(hitInfo.pose);
 
-                _anchor.SetActive(true);
-                _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
-                _anchor.transform.SetParent(trackedPlane.transform);
-                _networkManager.SendAnchor(trackedPlane);
+                    // since object is parented to an anchor, we send local info since on recieving end it should also be parented to an anchor
+                    _networkManager.SendModelSpawn(spawnedObject.transform.localPosition, spawnedObject.transform.localRotation);
+                }
             }
+        }
+
+        private void SetAnchorToPlane(ARPlane plane)
+        {
+            _anchor.SetActive(true);
+            _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
+            _anchor.transform.SetParent(plane.transform);
+        }
+
+        private GameObject SpawnObject(Pose pose)
+        {
+            GameObject spawnedObject = Instantiate(_anchoredObjectsToSpawn, pose.position, pose.rotation);
+            spawnedObject.transform.SetParent(_arPlane.transform, true);
+            spawnedObject.transform.localPosition = new Vector3(spawnedObject.transform.localPosition.x, spawnedObject.transform.localPosition.y + .25f, spawnedObject.transform.localPosition.z);
+            return spawnedObject;
         }
 
         private void OnServiceFound(string serviceAddress)
@@ -137,11 +176,40 @@ namespace ARPeerToPeerSample.Game
             int counter = 0;
             foreach (ARPlane aRPlane in _planeManager.trackables)
             {
+                if (_gameState == GameState.SearchingForSharedPlane && _planeToFind.Equals(aRPlane.trackableId))
+                {
+                    _gameState = GameState.PlaneFound;
+                    _arPlane = aRPlane;
+                    SetAnchorToPlane(_arPlane);
+                }
+
                 planes[counter] = aRPlane.trackableId.ToString();
                 ++counter;
             }
 
             _menuViewLogic.UpdatePlaneList(planes);
+        }
+
+        private void OnAnchorRecieved(TrackableId trackableId)
+        {
+            ARPlane anchorPlane;
+            if (_planeManager.trackables.TryGetTrackable(trackableId, out anchorPlane))
+            {
+                _arPlane = anchorPlane;
+                SetAnchorToPlane(_arPlane);
+                _gameState = GameState.PlaneFound;
+            }
+            else
+            {
+                _planeToFind = trackableId;
+                _gameState = GameState.SearchingForSharedPlane;
+            }
+        }
+
+        private void OnObjectSpawned(Pose objectPose)
+        {
+            // even if plane has not synced yet, anchor still exists
+            SpawnObject(objectPose);
         }
     }
 }

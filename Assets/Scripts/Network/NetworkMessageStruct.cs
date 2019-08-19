@@ -6,7 +6,8 @@ namespace ARPeerToPeerSample.Network
 	{
         ColorChange,
         WorldMap,
-        Anchor
+        Anchor,
+        SpawnedObject
 	}
 
 	public struct NetworkMessageStruct

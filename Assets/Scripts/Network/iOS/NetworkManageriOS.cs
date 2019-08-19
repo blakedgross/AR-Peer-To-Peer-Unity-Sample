@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine.XR.ARKit;
 using System.Threading;
+using UnityEngine.XR.ARSubsystems;
 
 namespace ARPeerToPeerSample.Network
 {
@@ -43,12 +44,18 @@ namespace ARPeerToPeerSample.Network
 
         public override void SendAnchor(ARPlane plane)
         {
-            SendAnchorAsync(plane);
-        }
-
-        private async void SendAnchorAsync(ARPlane plane)
-        {
-            // send anchor info by serializing plane and sending it over
+            // todo: all byte to "stream" conversion should be made more effecient through less copying
+            byte[] planeTrackableId1 = BitConverter.GetBytes(plane.trackableId.subId1);
+            byte[] planeTrackableId2 = BitConverter.GetBytes(plane.trackableId.subId2);
+            byte[] messagePacket = new byte[planeTrackableId1.Length + planeTrackableId2.Length];
+            planeTrackableId1.CopyTo(messagePacket, 0);
+            planeTrackableId2.CopyTo(messagePacket, planeTrackableId1.Length);
+            NetworkMessageStruct networkMessageStruct = new NetworkMessageStruct
+            {
+                Type = MessageType.Anchor,
+                Message = messagePacket
+            };
+            SendMessage(networkMessageStruct);
         }
 
         private async void SendWorldMapAsync()
@@ -75,6 +82,16 @@ namespace ARPeerToPeerSample.Network
                     Debug.Log("recieved world map");
                     ARWorldMap arWorldMap = (ARWorldMap)new PackableARWorldMap(networkMessage.Message);
                     RestartSessionWithWorldMap(arWorldMap);
+                    break;
+                case MessageType.Anchor:
+                    Debug.Log("recieved anchor");
+                    ulong trackableId1 = BitConverter.ToUInt64(networkMessage.Message, 0);
+                    ulong trackableId2 = BitConverter.ToUInt64(networkMessage.Message, sizeof(ulong));
+                    TrackableId trackableId = new TrackableId(trackableId1, trackableId2);
+                    AnchorRecieved?.Invoke(trackableId);
+                    break;
+                case MessageType.SpawnedObject:
+                    DeserializeObjectSpawnAndSendEvent(networkMessage.Message);
                     break;
             }
         }

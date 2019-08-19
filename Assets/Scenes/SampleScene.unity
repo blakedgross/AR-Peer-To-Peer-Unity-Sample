@@ -578,6 +578,11 @@ PrefabInstance:
       propertyPath: _arSession
       value: 
       objectReference: {fileID: 607889176}
+    - target: {fileID: 2397649183827791426, guid: 932a80a92befaf144b3a671c98eddc6a,
+        type: 3}
+      propertyPath: _planeManager
+      value: 
+      objectReference: {fileID: 7090915475095542013}
     - target: {fileID: 1902488231922020747, guid: 932a80a92befaf144b3a671c98eddc6a,
         type: 3}
       propertyPath: _arRaycastManager

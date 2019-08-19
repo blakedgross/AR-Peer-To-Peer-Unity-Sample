@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 namespace ARPeerToPeerSample.Network
 {
@@ -10,6 +11,8 @@ namespace ARPeerToPeerSample.Network
         public Action<string> ServiceFound;
         public Action<Color> ColorChangeMessageRecieved;
         public Action ConnectionEstablished;
+        public Action<TrackableId> AnchorRecieved;
+        public Action<Pose> ObjectSpawned;
 
         public virtual void Connect()
         {
@@ -62,9 +65,52 @@ namespace ARPeerToPeerSample.Network
             });
         }
 
+        public void SendModelSpawn(Vector3 localPosition, Quaternion rotation)
+        {
+            SendMessage(new NetworkMessageStruct
+            {
+                Type = MessageType.SpawnedObject,
+                Message = SerializeSpawnedObjectMessage(localPosition, rotation)
+            });
+        }
+
         protected static bool VerifyColor(Color originalColor, Color deserializedColor)
         {
             return Math.Abs(originalColor.r - deserializedColor.r) < Mathf.Epsilon && Math.Abs(originalColor.g - deserializedColor.g) < Mathf.Epsilon && Math.Abs(originalColor.b - deserializedColor.b) < Mathf.Epsilon;
+        }
+
+        protected byte[] SerializeSpawnedObjectMessage(Vector3 localPosition, Quaternion rotation)
+        {
+            byte[] message = new byte[sizeof(float) * 7];
+            byte[] posX = BitConverter.GetBytes(localPosition.x);
+            byte[] posY = BitConverter.GetBytes(localPosition.y);
+            byte[] posZ = BitConverter.GetBytes(localPosition.z);
+            byte[] rotX = BitConverter.GetBytes(rotation.x);
+            byte[] rotY = BitConverter.GetBytes(rotation.y);
+            byte[] rotZ = BitConverter.GetBytes(rotation.z);
+            byte[] rotW = BitConverter.GetBytes(rotation.w);
+            posX.CopyTo(message, 0);
+            posY.CopyTo(message, sizeof(float));
+            posZ.CopyTo(message, sizeof(float) * 2);
+            rotX.CopyTo(message, sizeof(float) * 3);
+            rotY.CopyTo(message, sizeof(float) * 4);
+            rotZ.CopyTo(message, sizeof(float) * 5);
+            rotW.CopyTo(message, sizeof(float) * 6);
+
+            return message;
+        }
+
+        protected Pose DeserializeObjectSpawn(byte[] objectSpawn)
+        {
+            float posX = BitConverter.ToSingle(objectSpawn, 0);
+            float posY = BitConverter.ToSingle(objectSpawn, sizeof(float));
+            float posZ = BitConverter.ToSingle(objectSpawn, sizeof(float) * 2);
+            float rotX = BitConverter.ToSingle(objectSpawn, sizeof(float) * 3);
+            float rotY = BitConverter.ToSingle(objectSpawn, sizeof(float) * 4);
+            float rotZ = BitConverter.ToSingle(objectSpawn, sizeof(float) * 5);
+            float rotW = BitConverter.ToSingle(objectSpawn, sizeof(float) * 6);
+
+            return new Pose(new Vector3(posX, posY, posZ), new Quaternion(rotX, rotY, rotZ, rotW));
         }
 
         protected byte[] SerializeColor(Color color)
@@ -97,6 +143,12 @@ namespace ARPeerToPeerSample.Network
         {
             Color color = DeserializeColor(colorData);
             ColorChangeMessageRecieved?.Invoke(color);
+        }
+
+        protected void DeserializeObjectSpawnAndSendEvent(byte[] objectSpawnData)
+        {
+            Pose pose = DeserializeObjectSpawn(objectSpawnData);
+            ObjectSpawned?.Invoke(pose);
         }
     }
 }
