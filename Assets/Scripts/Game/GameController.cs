@@ -26,7 +26,7 @@ namespace ARPeerToPeerSample.Game
 #elif UNITY_IOS
             _networkManager = new NetworkManageriOS();
 #endif
-            _networkManager = new NetworkManageriOS(); //REMOVE (ONLY FOR DEBUG)
+           // _networkManager = new NetworkManageriOS(); //REMOVE (ONLY FOR DEBUG)
             _networkManager.ServiceFound += OnServiceFound;
             _networkManager.ConnectionEstablished += OnConnectionEstablished;
             _networkManager.MessageReceived += OnMessageReceived;
