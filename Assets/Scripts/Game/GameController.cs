@@ -43,7 +43,7 @@ namespace ARPeerToPeerSample.Game
         private ARPlane _arPlane;
         private TrackableId _planeToFind;
         private GameState _gameState;
-
+        private bool _downLastFrame = false;
         private void Awake()
         {
 #if UNITY_ANDROID
@@ -75,12 +75,15 @@ namespace ARPeerToPeerSample.Game
         private void Update()
         {
             ARRaycastHit hitInfo; ARPlane trackedPlane;
-            if (_arHitController.CheckHitOnPlane(out hitInfo, out trackedPlane))
+            bool wasHit = _arHitController.CheckHitOnPlane(out hitInfo, out trackedPlane);
+            if (!_downLastFrame && wasHit)
             {
+                _downLastFrame = true;
                 print("found hit on plane: " + hitInfo.pose.position);
                 if (_gameState == GameState.Searching)
                 {
                     _gameState = GameState.PlaneFound;
+                    SetAnchorToPlane(trackedPlane);
                     _networkManager.SendAnchor(trackedPlane);
                     _arPlane = trackedPlane;
                 }
@@ -92,20 +95,31 @@ namespace ARPeerToPeerSample.Game
                     _networkManager.SendModelSpawn(spawnedObject.transform.localPosition, spawnedObject.transform.localRotation);
                 }
             }
+
+            _downLastFrame = wasHit;
         }
 
         private void SetAnchorToPlane(ARPlane plane)
         {
             _anchor.SetActive(true);
-            _anchor.transform.localPosition = new Vector3(0f, 0.25f, 0f);
             _anchor.transform.SetParent(plane.transform);
+            _anchor.transform.localPosition = new Vector3(_anchor.transform.localPosition.x, _anchor.transform.localPosition.y + 0.25f, _anchor.transform.localPosition.z);
         }
 
         private GameObject SpawnObject(Pose pose)
         {
             GameObject spawnedObject = Instantiate(_anchoredObjectsToSpawn, pose.position, pose.rotation);
-            spawnedObject.transform.SetParent(_arPlane.transform, true);
+            spawnedObject.transform.SetParent(_anchor.transform, true);
             spawnedObject.transform.localPosition = new Vector3(spawnedObject.transform.localPosition.x, spawnedObject.transform.localPosition.y + .25f, spawnedObject.transform.localPosition.z);
+            return spawnedObject;
+        }
+
+        private GameObject SpawnObjectRemote(Pose pose)
+        {
+            GameObject spawnedObject = Instantiate(_anchoredObjectsToSpawn);
+            spawnedObject.transform.SetParent(_anchor.transform, false);
+            spawnedObject.transform.localPosition = new Vector3(pose.position.x, pose.position.y, pose.position.z);
+            spawnedObject.transform.localRotation = new Quaternion(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w);
             return spawnedObject;
         }
 
@@ -173,18 +187,17 @@ namespace ARPeerToPeerSample.Game
         private void OnPlanesChanged(ARPlanesChangedEventArgs aRPlanesChangedEventArgs)
         {
             string[] planes = new string[_planeManager.trackables.count];
-            int counter = 0;
-            foreach (ARPlane aRPlane in _planeManager.trackables)
-            {
-                if (_gameState == GameState.SearchingForSharedPlane && _planeToFind.Equals(aRPlane.trackableId))
-                {
-                    _gameState = GameState.PlaneFound;
-                    _arPlane = aRPlane;
-                    SetAnchorToPlane(_arPlane);
-                }
 
-                planes[counter] = aRPlane.trackableId.ToString();
-                ++counter;
+            if (_gameState == GameState.SearchingForSharedPlane && _planeManager.trackables.TryGetTrackable(_planeToFind, out _arPlane))
+            {
+                _gameState = GameState.PlaneFound;
+                SetAnchorToPlane(_arPlane);
+            }
+
+            int counter = 0;
+            foreach (ARPlane plane in _planeManager.trackables)
+            {
+                planes[counter] = plane.trackableId.ToString();
             }
 
             _menuViewLogic.UpdatePlaneList(planes);
@@ -209,7 +222,7 @@ namespace ARPeerToPeerSample.Game
         private void OnObjectSpawned(Pose objectPose)
         {
             // even if plane has not synced yet, anchor still exists
-            SpawnObject(objectPose);
+            SpawnObjectRemote(objectPose);
         }
     }
 }
