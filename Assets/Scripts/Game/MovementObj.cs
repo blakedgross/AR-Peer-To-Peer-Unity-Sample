@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class MovementObj : MonoBehaviour
 {
+    private bool hasNetworkAuthority = true;
+    private float netSpeed = 0.05f; //MS in seconds (TODO - fix hardcoded value)
+    private float lerpDelta = 0f; //used for intepolating server values on client
+
     private Vector3 originalPos;
     private Vector3 newPos;
     private float posAngle;
@@ -30,6 +34,18 @@ public class MovementObj : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(hasNetworkAuthority)
+        {
+            ServerMove();
+        }
+        else
+        {
+            ClientMove();
+        }
+    }
+
+    void ServerMove()
+    {
         //game object movement on circle
         posAngle += 1 * Time.deltaTime;
         x = Mathf.Cos(posAngle) * radius;
@@ -42,13 +58,24 @@ public class MovementObj : MonoBehaviour
         //cylinder movement back and forth
         cylinderAngle += (cylinderMoveSpeed * cylinderDirection) * Time.deltaTime;
 
-        if(cylinderAngle > cylinderMoveAmount || cylinderAngle < -cylinderMoveAmount)
+        if (cylinderAngle > cylinderMoveAmount || cylinderAngle < -cylinderMoveAmount)
         {
             cylinderAngle = cylinderMoveAmount * cylinderDirection;
             cylinderDirection *= -1;
         }
 
         cylinderPivot.transform.rotation = Quaternion.Euler(new Vector3(90, 0, cylinderAngle));
+    }
 
+    void ClientMove()
+    {
+        lerpDelta += Mathf.Clamp(Time.deltaTime / netSpeed, 0f, 1f);
+        transform.position = Vector3.Lerp(transform.position, newPos, lerpDelta);
+    }
+
+    void NetUpdate(Vector3 pos)
+    {
+        newPos = pos;
+        lerpDelta = 0f;
     }
 }
