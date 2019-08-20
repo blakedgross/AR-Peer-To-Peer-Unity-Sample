@@ -141,7 +141,7 @@ namespace ARPeerToPeerSample.Game
         private void OnColorChangeMessageReceived(Color color)
         {
             print("received color: " + color.ToString());
-            SetColor(_anchor.GetComponent<Renderer>(), color);
+            SetColor(_anchor.GetComponentInChildren<Renderer>(), color);
         }
 
         private void OnChangeColorAndSendMessage()
@@ -161,7 +161,7 @@ namespace ARPeerToPeerSample.Game
                 colorToSend = Color.green;
             }
 
-            SetColor(_anchor.GetComponent<Renderer>(), colorToSend);
+            SetColor(_anchor.GetComponentInChildren<Renderer>(), colorToSend);
             _networkManager.SendColorMessage(colorToSend);
         }
 
